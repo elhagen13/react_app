@@ -15,14 +15,30 @@ function MyApp() {
   }, [] );
 
   function removeOneCharacter (index) {
-    const updated = characters.filter((character, i) => {
-        return i !== index
-    });
-    setCharacters(updated);
+    const id = characters[index].id;
+    removeUser(id).then((response) => {
+      if(response.status === 204){
+        const updated = characters.filter((character, i) => {
+          return i !== index
+        });
+        setCharacters(updated);
+      }
+      else if(response.status === 404){
+        console.log("Resource not found");
+      }
+    })
   }
 
-  function updateList(person) {
-    setCharacters([...characters, person]);
+  function removeUser(id){
+    const total_string = "http://localhost:8000/users/" + id;
+    const promise = fetch(total_string, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    return promise;
   }
 
   function fetchUsers() {
@@ -44,7 +60,13 @@ function MyApp() {
 
   function updateList(person) { 
     postUser(person)
-      .then(() => setCharacters([...characters, person]))
+      .then((response) => {
+        if(response.status === 201){
+          response.json().then((updated) => {
+            setCharacters([...characters, updated]);
+          })
+        }      
+      })
       .catch((error) => {
         console.log(error);
       })

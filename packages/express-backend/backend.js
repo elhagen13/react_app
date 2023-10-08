@@ -94,19 +94,25 @@ const addUser = (user) => {
 
 app.post('/users', (req, res) => {
     const userToAdd = req.body;
-    addUser(userToAdd);
-    res.send();
+    userToAdd['id'] = (parseInt(Math.random() * 1000000)).toString();
+
+    try{
+        addUser(userToAdd);
+        res.status(201).send(JSON.stringify((userToAdd)));
+    }
+    catch (error){
+        res.status(400).send('Unable to post user');
+    }
 });
 
 app.delete('/users/:id', (req, res) => {
     const id = req.params['id'];
-    console.log(id);
     let result = findUserById(id);
     if (result === undefined) {
        res.status(404).send('Resource not found.');
    } else {
        users.users_list = users.users_list.filter((u) => u.id !== id)
-       res.send();
+       res.status(204).send();
    }
  }) 
 
