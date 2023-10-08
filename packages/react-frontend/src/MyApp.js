@@ -27,6 +27,7 @@ function MyApp() {
         console.log("Resource not found");
       }
     })
+    .catch((error) => { console.log(error); });
   }
 
   function removeUser(id){
